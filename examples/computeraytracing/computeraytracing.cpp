@@ -93,7 +93,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase(ENABLE_VALIDATION)
 	{
-		title = "Compute shader ray tracing";
+		title = "Compute shader ray tracing with Vulkan";
 		settings.overlay = true;
 		compute.ubo.aspectRatio = (float)width / (float)height;
 		timerSpeed *= 0.25f;
@@ -103,7 +103,7 @@ public:
 		camera.setRotation(glm::vec3(0.0f, 0.0f, 0.0f));
 		camera.setTranslation(glm::vec3(0.0f, 0.0f, -4.0f));
 		camera.rotationSpeed = 0.0f;
-		camera.movementSpeed = 2.5f;
+		camera.movementSpeed = 2.0f;
 	}
 
 	~VulkanExample()
@@ -316,14 +316,25 @@ public:
 		return plane;
 	}
 
-	// Setup and fill the compute shader storage buffers containing primitives for the raytraced scene
+	// Setup and fill the compute shader storage buffers containing primitives for the raytraced scene/
 	void prepareStorageBuffers()
 	{
 		// Spheres
 		std::vector<Sphere> spheres;
-		spheres.push_back(newSphere(glm::vec3(1.75f, -0.5f, 0.0f), 1.0f, glm::vec3(0.0f, 1.0f, 0.0f), 32.0f));
-		spheres.push_back(newSphere(glm::vec3(0.0f, 1.0f, -0.5f), 1.0f, glm::vec3(0.65f, 0.77f, 0.97f), 32.0f));
-		spheres.push_back(newSphere(glm::vec3(-1.75f, -0.75f, -0.5f), 1.25f, glm::vec3(0.9f, 0.76f, 0.46f), 32.0f));
+
+		spheres.push_back(newSphere(glm::vec3(1.9f, -2.5f, -1.3f), 1.2f, glm::vec3(1.0f, 0.97f, 0.86f), 32.0f)); //right down
+
+		spheres.push_back(newSphere(glm::vec3(-2.2f, 1.6f, -0.9f), 0.2f, glm::vec3(1.0f, 0.18f, 0.41f), 32.0f));
+		spheres.push_back(newSphere(glm::vec3(-1.0f, 1.6f, -0.5f), 0.3f, glm::vec3(0.8f, 0.4f, 0.4f), 32.0f));
+		spheres.push_back(newSphere(glm::vec3(0.0f, 1.6f, -0.3f), 0.4f, glm::vec3(0.8f, 0.36f, 0.36f), 32.0f));
+		spheres.push_back(newSphere(glm::vec3(1.0f, 1.6f, -0.3f), 0.4f, glm::vec3(1.0f,0.63f, 0.45f), 32.0f));
+		spheres.push_back(newSphere(glm::vec3(2.0f, 1.6f, -0.5f), 0.3f, glm::vec3(0.98f, 0.5f, 0.45f), 32.0f));
+		spheres.push_back(newSphere(glm::vec3(2.8f, 1.6f, -0.9f), 0.2f,  glm::vec3(1.0f, 0.5f, 0.8f), 32.0f));
+
+
+		spheres.push_back(newSphere(glm::vec3(-2.30f, -0.75f, -0.3f),0.6f, glm::vec3(0.67f, 0.87f, 0.90f), 32.0f));   //
+		spheres.push_back(newSphere(glm::vec3(-0.8f, -2.0f, -0.4f), 0.4f, glm::vec3(0.0f, 0.75f, 1.0f), 32.0f));        //middle down
+		
 		VkDeviceSize storageBufferSize = spheres.size() * sizeof(Sphere);
 
 		// Stage
@@ -355,12 +366,12 @@ public:
 		// Planes
 		std::vector<Plane> planes;
 		const float roomDim = 4.0f;
-		planes.push_back(newPlane(glm::vec3(0.0f, 1.0f, 0.0f), roomDim, glm::vec3(1.0f), 32.0f));
-		planes.push_back(newPlane(glm::vec3(0.0f, -1.0f, 0.0f), roomDim, glm::vec3(1.0f), 32.0f));
-		planes.push_back(newPlane(glm::vec3(0.0f, 0.0f, 1.0f), roomDim, glm::vec3(1.0f), 32.0f));
-		planes.push_back(newPlane(glm::vec3(0.0f, 0.0f, -1.0f), roomDim, glm::vec3(0.0f), 32.0f));
-		planes.push_back(newPlane(glm::vec3(-1.0f, 0.0f, 0.0f), roomDim, glm::vec3(1.0f, 0.0f, 0.0f), 32.0f));
-		planes.push_back(newPlane(glm::vec3(1.0f, 0.0f, 0.0f), roomDim, glm::vec3(0.0f, 1.0f, 0.0f), 32.0f));
+		planes.push_back(newPlane(glm::vec3(0.0f, 1.0f, 0.0f), roomDim, glm::vec3(0.4f), 32.0f));
+		planes.push_back(newPlane(glm::vec3(0.0f, -1.0f, 0.0f), roomDim, glm::vec3(0.3f,0.3f,0.1f), 32.0f));
+		planes.push_back(newPlane(glm::vec3(0.0f, 0.0f, 1.0f), roomDim, glm::vec3(0.0f,0.3f, 0.0f), 32.0f));
+		planes.push_back(newPlane(glm::vec3(0.0f, 0.0f, -1.0f), roomDim, glm::vec3(0.1f), 32.0f));
+		planes.push_back(newPlane(glm::vec3(-1.0f, 0.0f, 0.0f), roomDim, glm::vec3(0.3f), 32.0f));
+		planes.push_back(newPlane(glm::vec3(1.0f, 0.0f, 0.0f), roomDim, glm::vec3(0.4f), 32.0f));
 		storageBufferSize = planes.size() * sizeof(Plane);
 
 		// Stage
@@ -455,7 +466,7 @@ public:
 		vkUpdateDescriptorSets(device, writeDescriptorSets.size(), writeDescriptorSets.data(), 0, NULL);
 	}
 
-	void preparePipelines()
+	void preparePipelines()	
 	{
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyState =
 			vks::initializers::pipelineInputAssemblyStateCreateInfo(
@@ -726,9 +737,12 @@ public:
 	{
 		if (!prepared)
 			return;
+		std::cout << "calling function" << std::endl;
 		draw();
+		
 		if (!paused)
 		{
+			std::cout << "update uniform" << std::endl;
 			updateUniformBuffers();
 		}
 	}
