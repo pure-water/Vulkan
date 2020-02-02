@@ -7,9 +7,11 @@ layout (binding = 0, rgba8) uniform writeonly image2D resultImage;
 
 #define EPSILON 0.0001
 #define MAXLEN 1000.0
-#define SHADOW 0.5
+#define SHADOW 0.4
 #define RAYBOUNCES 2
+//#define RAYBOUNCES 
 #define REFLECTIONS true
+//#define REFLECTIONS false
 #define REFLECTIONSTRENGTH 0.4
 #define REFLECTIONFALLOFF 0.5
 
@@ -60,7 +62,7 @@ layout (std140, binding = 3) buffer Planes
 void reflectRay(inout vec3 rayD, in vec3 mormal)
 {
 	rayD = rayD + 2.0 * -dot(mormal, rayD) * mormal;
-}
+}	
 
 // Lighting =========================================================
 
@@ -153,7 +155,7 @@ float calcShadow(in vec3 rayO, in vec3 rayD, in int objectId, inout float t)
 		if ((tSphere > EPSILON) && (tSphere < t))
 		{
 			t = tSphere;
-			return SHADOW;
+			return SHADOW;  //it could be both hard shadow and soft shadow
 		}
 	}		
 	return 1.0;
@@ -166,7 +168,7 @@ vec3 fog(in float t, in vec3 color)
 
 vec3 renderScene(inout vec3 rayO, inout vec3 rayD, inout int id)
 {
-	vec3 color = vec3(0.0);
+	vec3 color = vec3(0.0);  //background color is black
 	float t = MAXLEN;
 
 	// Get intersected object ID
@@ -217,7 +219,7 @@ vec3 renderScene(inout vec3 rayO, inout vec3 rayD, inout int id)
 	color *= calcShadow(pos, lightVec, id, t);
 	
 	// Fog
-	color = fog(t, color);	
+	//color = fog(t, color);	
 	
 	// Reflect ray for next render pass
 	reflectRay(rayD, normal);
@@ -228,17 +230,20 @@ vec3 renderScene(inout vec3 rayO, inout vec3 rayD, inout int id)
 
 void main()
 {
-	ivec2 dim = imageSize(resultImage);
+	ivec2 dim = imageSize(resultImage);	
 	vec2 uv = vec2(gl_GlobalInvocationID.xy) / dim;
 
 	vec3 rayO = ubo.camera.pos;
-	vec3 rayD = normalize(vec3((-1.0 + 2.0 * uv) * vec2(ubo.aspectRatio, 1.0), -1.0));
+	//vec3 rayD = normalize(vec3((-1.0 + 2.0 * uv) * vec2(ubo.aspectRatio, 1.0), -1.0)); //this is where image plane is 
+	vec3 rayD = normalize(vec3((-1.0 + 2.0 * uv) * vec2(ubo.aspectRatio, 1.0), -1.0)); //-1.0 , this is where image plane is 
+
 		
 	// Basic color path
 	int id = 0;
 	vec3 finalColor = renderScene(rayO, rayD, id);
 	
 	// Reflection
+	
 	if (REFLECTIONS)
 	{
 		float reflectionStrength = REFLECTIONSTRENGTH;
@@ -249,6 +254,10 @@ void main()
 			reflectionStrength *= REFLECTIONFALLOFF;
 		}
 	}
-			
+	
+
+	//vec3 ff_color = pow(finalColor,0.1f);
+    finalColor = vec3(pow(finalColor.x, .64f),pow(finalColor.y,.64f),pow(finalColor.z,.64f));
+	//finalColor = vec3(1.0f);
 	imageStore(resultImage, ivec2(gl_GlobalInvocationID.xy), vec4(finalColor, 0.0));
-}
+}	
