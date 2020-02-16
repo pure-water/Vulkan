@@ -63,11 +63,14 @@ public:
 			glm::vec3 lightPos;
 			float aspectRatio;						// Aspect ratio of the viewport
 			glm::vec4 fogColor = glm::vec4(0.0f);
+			glm::vec4 WorldOffset = glm::vec4(0.0f);     // offset against the origninal sphere, alpha channel can be used to scale the sphere radis
 			struct {
 				glm::vec3 pos = glm::vec3(0.0f, 0.0f, 4.0f);
 				glm::vec3 lookat = glm::vec3(0.0f, 0.5f, 0.0f);
 				float fov = 10.0f;
 			} camera;
+			glm::mat4 rotMat      = glm::mat4(0.0f);     // Translate a rotation uniform into the shader
+
 		} ubo;
 	} compute;
 
@@ -93,7 +96,7 @@ public:
 
 	VulkanExample() : VulkanExampleBase(ENABLE_VALIDATION)
 	{
-		title = "Compute shader ray tracing with Vulkan";
+		title = "Ray Tracing in Cornell Box";
 		settings.overlay = true;
 		compute.ubo.aspectRatio = (float)width / (float)height;
 		timerSpeed *= 0.25f;
@@ -332,9 +335,14 @@ public:
 		spheres.push_back(newSphere(glm::vec3(2.8f, 1.6f, -0.9f), 0.2f,  glm::vec3(1.0f, 0.5f, 0.8f), 32.0f));
 
 
-		spheres.push_back(newSphere(glm::vec3(-2.30f, -0.75f, -0.3f),0.6f, glm::vec3(0.67f, 0.87f, 0.90f), 32.0f));   //
-		spheres.push_back(newSphere(glm::vec3(-0.8f, -2.0f, -0.4f), 0.4f, glm::vec3(0.0f, 0.75f, 1.0f), 32.0f));        //middle down
+		spheres.push_back(newSphere(glm::vec3(-2.30f, -1.75f, -0.3f),0.6f, glm::vec3(0.67f, 0.87f, 0.90f), 32.0f));   //
+		spheres.push_back(newSphere(glm::vec3(-0.8f, -2.3f, -0.4f), 0.4f, glm::vec3(0.0f, 0.75f, 1.0f), 32.0f));        //middle down
 		
+		spheres.push_back(newSphere(glm::vec3(-3.0f, -2.8f, 0.2f), 0.3f, glm::vec3(0.3f, 0.75f, 0.2f), 32.0f));        //middle down
+		spheres.push_back(newSphere(glm::vec3(0.1f, -3.6f, -0.3f), 0.4f, glm::vec3(0.3f, 0.75f, 0.2f), 32.0f));        //middle down
+		spheres.push_back(newSphere(glm::vec3(3.3f, -3.6f, -0.3f), 0.2f, glm::vec3(0.2f, 0.3f, 0.2f), 32.0f));         //right nearest
+
+
 		VkDeviceSize storageBufferSize = spheres.size() * sizeof(Sphere);
 
 		// Stage
@@ -396,6 +404,24 @@ public:
 		VulkanExampleBase::flushCommandBuffer(copyCmd, queue, true);
 
 		stagingBuffer.destroy();
+	}
+
+
+	//yaogang updating
+
+
+
+	// Setup and fill the compute shader storage buffers containing primitives for the raytraced scene/
+	void UpdateStorageBuffers()
+	{
+	
+		//**yaogang to do? why update storage buffer does not work? 
+		//VK_CHECK_RESULT(compute.storageBuffers.spheres.map());
+		//memcpy(compute.storageBuffers.spheres.mapped,&spheres, sizeof(compute.storageBuffers.spheres));
+		//compute.storageBuffers.spheres.unmap();
+
+
+
 	}
 
 	void setupDescriptorPool()
@@ -684,12 +710,25 @@ public:
 		updateUniformBuffers();
 	}
 
+
 	void updateUniformBuffers()
 	{
 		compute.ubo.lightPos.x = 0.0f + sin(glm::radians(timer * 360.0f)) * cos(glm::radians(timer * 360.0f)) * 2.0f;
 		compute.ubo.lightPos.y = 0.0f + sin(glm::radians(timer * 360.0f)) * 2.0f;
-		compute.ubo.lightPos.z = 0.0f + cos(glm::radians(timer * 360.0f)) * 2.0f;
+		compute.ubo.lightPos.z = 0.0f + cos(glm::radians(timer * 360.0f)) * 2.0f*2.0f;
+
+	
 		compute.ubo.camera.pos = camera.position * -1.0f;
+
+		//**YaoGang
+		//**Figure out why this line does not work? 
+		//compute.ubo.rotMat = glm::mat4(1.0f + sin(glm::radians(timer * 360.0f))  * 3.0f);
+		compute.ubo.fogColor        = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f,0.0f);
+		//compute.ubo.WorldOffset.xyz = glm::vec3(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f);
+		compute.ubo.WorldOffset.w   = 1.1f*cos((glm::radians(timer * 360.0f)));
+
+		
+		
 		VK_CHECK_RESULT(compute.uniformBuffer.map());
 		memcpy(compute.uniformBuffer.mapped, &compute.ubo, sizeof(compute.ubo));
 		compute.uniformBuffer.unmap();
@@ -705,6 +744,8 @@ public:
 		VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
 
 		VulkanExampleBase::submitFrame();
+
+		std::cout << "draw in place" << std::endl;
 
 		// Submit compute commands
 		// Use a fence to ensure that compute command buffer has finished executing before using it again
@@ -744,13 +785,14 @@ public:
 		{
 			std::cout << "update uniform" << std::endl;
 			updateUniformBuffers();
+			//UpdateStorageBuffers();
 		}
 	}
 
 	virtual void viewChanged()
 	{
 		compute.ubo.aspectRatio = (float)width / (float)height;
-		updateUniformBuffers();
+		//updateUniformBuffers();
 	}
 };
 
