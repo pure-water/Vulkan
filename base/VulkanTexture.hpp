@@ -182,8 +182,8 @@ namespace vks
 					bufferCopyRegion.imageSubresource.mipLevel = i;
 					bufferCopyRegion.imageSubresource.baseArrayLayer = 0;
 					bufferCopyRegion.imageSubresource.layerCount = 1;
-					bufferCopyRegion.imageExtent.width = ktxTexture->baseWidth >> i;
-					bufferCopyRegion.imageExtent.height = ktxTexture->baseHeight >> i;
+					bufferCopyRegion.imageExtent.width = std::max(1u, ktxTexture->baseWidth >> i);
+					bufferCopyRegion.imageExtent.height = std::max(1u, ktxTexture->baseHeight >> i);
 					bufferCopyRegion.imageExtent.depth = 1;
 					bufferCopyRegion.bufferOffset = offset;
 
@@ -618,7 +618,7 @@ namespace vks
 			memcpy(data, ktxTextureData, ktxTextureSize);
 			vkUnmapMemory(device->logicalDevice, stagingMemory);
 
-			// Setup buffer copy regions for each layer including all of it's miplevels
+			// Setup buffer copy regions for each layer including all of its miplevels
 			std::vector<VkBufferImageCopy> bufferCopyRegions;
 
 			for (uint32_t layer = 0; layer < layerCount; layer++)
@@ -812,7 +812,7 @@ namespace vks
 			memcpy(data, ktxTextureData, ktxTextureSize);
 			vkUnmapMemory(device->logicalDevice, stagingMemory);
 
-			// Setup buffer copy regions for each face including all of it's miplevels
+			// Setup buffer copy regions for each face including all of its miplevels
 			std::vector<VkBufferImageCopy> bufferCopyRegions;
 
 			for (uint32_t face = 0; face < 6; face++)
