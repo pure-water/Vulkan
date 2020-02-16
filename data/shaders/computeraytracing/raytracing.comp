@@ -27,8 +27,9 @@ layout (binding = 1) uniform UBO
 	vec3 lightPos;
 	float aspectRatio;
 	vec4 fogColor;
+	vec4 WorldOffset;
 	Camera camera;
-	mat4 rotMat;
+	mat4 rotMat;  //yaogang: pass this as the transform
 } ubo;
 
 struct Sphere 
@@ -80,11 +81,11 @@ float lightSpecular(vec3 normal, vec3 lightDir, float specularFactor)
 
 // Sphere ===========================================================
 
-float sphereIntersect(in vec3 rayO, in vec3 rayD, in Sphere sphere)
+float sphereIntersect(in vec3 rayO, in vec3 rayD, in Sphere sphere,in vec4 timer)
 {
-	vec3 oc = rayO - sphere.pos;
+	vec3 oc = rayO - (sphere.pos + timer.xyz);
 	float b = 2.0 * dot(oc, rayD);
-	float c = dot(oc, oc) - sphere.radius*sphere.radius;
+	float c = dot(oc, oc) - sphere.radius*sphere.radius  * timer.w*timer.w;
 	float h = b*b - 4.0*c;
 	if (h < 0.0) 
 	{
@@ -95,9 +96,9 @@ float sphereIntersect(in vec3 rayO, in vec3 rayD, in Sphere sphere)
 	return t;
 }
 
-vec3 sphereNormal(in vec3 pos, in Sphere sphere)
+vec3 sphereNormal(in vec3 pos, in Sphere sphere, in vec4 timer)
 {
-	return (pos - sphere.pos) / sphere.radius;
+	return (pos - (sphere.pos + timer.xyz)) / (sphere.radius*timer.w);
 }
 
 // Plane ===========================================================
@@ -118,13 +119,14 @@ float planeIntersect(vec3 rayO, vec3 rayD, Plane plane)
 }
 
 	
-int intersect(in vec3 rayO, in vec3 rayD, inout float resT)
+int intersect(in vec3 rayO, in vec3 rayD, inout float resT,in vec4 timer)
 {
 	int id = -1;
 
 	for (int i = 0; i < spheres.length(); i++)
 	{
-		float tSphere = sphereIntersect(rayO, rayD, spheres[i]);
+		float tSphere = sphereIntersect(rayO, rayD, spheres[i],timer
+		);
 		if ((tSphere > EPSILON) && (tSphere < resT))
 		{
 			id = spheres[i].id;
@@ -145,13 +147,13 @@ int intersect(in vec3 rayO, in vec3 rayD, inout float resT)
 	return id;
 }
 
-float calcShadow(in vec3 rayO, in vec3 rayD, in int objectId, inout float t)
+float calcShadow(in vec3 rayO, in vec3 rayD, in int objectId, inout float t,in vec4 timer)
 {
 	for (int i = 0; i < spheres.length(); i++)
 	{
 		if (spheres[i].id == objectId)
 			continue;
-		float tSphere = sphereIntersect(rayO, rayD, spheres[i]);
+		float tSphere = sphereIntersect(rayO, rayD, spheres[i],timer);
 		if ((tSphere > EPSILON) && (tSphere < t))
 		{
 			t = tSphere;
@@ -166,13 +168,13 @@ vec3 fog(in float t, in vec3 color)
 	return mix(color, ubo.fogColor.rgb, clamp(sqrt(t*t)/20.0, 0.0, 1.0));
 }
 
-vec3 renderScene(inout vec3 rayO, inout vec3 rayD, inout int id)
+vec3 renderScene(inout vec3 rayO, inout vec3 rayD, inout int id, in vec4 timer)
 {
 	vec3 color = vec3(0.0);  //background color is black
 	float t = MAXLEN;
-
+	
 	// Get intersected object ID
-	int objectID = intersect(rayO, rayD, t);
+	int objectID = intersect(rayO, rayD, t,timer);
 	
 	if (objectID == -1)
 	{
@@ -202,7 +204,7 @@ vec3 renderScene(inout vec3 rayO, inout vec3 rayD, inout int id)
 	{
 		if (objectID == spheres[i].id)
 		{
-			normal = sphereNormal(pos, spheres[i]);	
+			normal = sphereNormal(pos, spheres[i],timer);	
 			float diffuse = lightDiffuse(normal, lightVec);
 			float specular = lightSpecular(normal, lightVec, spheres[i].specular);
 			color = diffuse * spheres[i].diffuse + specular;	
@@ -216,7 +218,7 @@ vec3 renderScene(inout vec3 rayO, inout vec3 rayD, inout int id)
 
 	// Shadows
 	t = length(ubo.lightPos - pos);
-	color *= calcShadow(pos, lightVec, id, t);
+	color *= calcShadow(pos, lightVec, id, t,timer);
 	
 	// Fog
 	//color = fog(t, color);	
@@ -232,15 +234,16 @@ void main()
 {
 	ivec2 dim = imageSize(resultImage);	
 	vec2 uv = vec2(gl_GlobalInvocationID.xy) / dim;
-
+	vec4 timer = ubo.WorldOffset.xyzw; //animation results 
 	vec3 rayO = ubo.camera.pos;
-	//vec3 rayD = normalize(vec3((-1.0 + 2.0 * uv) * vec2(ubo.aspectRatio, 1.0), -1.0)); //this is where image plane is 
 	vec3 rayD = normalize(vec3((-1.0 + 2.0 * uv) * vec2(ubo.aspectRatio, 1.0), -1.0)); //-1.0 , this is where image plane is 
 
 		
 	// Basic color path
 	int id = 0;
-	vec3 finalColor = renderScene(rayO, rayD, id);
+	vec3 finalColor = renderScene(rayO, rayD, id,timer);
+
+
 	
 	// Reflection
 	
@@ -249,7 +252,7 @@ void main()
 		float reflectionStrength = REFLECTIONSTRENGTH;
 		for (int i = 0; i < RAYBOUNCES; i++)
 		{
-			vec3 reflectionColor = renderScene(rayO, rayD, id);
+			vec3 reflectionColor = renderScene(rayO, rayD, id,timer);
 			finalColor = (1.0 - reflectionStrength) * finalColor + reflectionStrength * mix(reflectionColor, finalColor, 1.0 - reflectionStrength);			
 			reflectionStrength *= REFLECTIONFALLOFF;
 		}
