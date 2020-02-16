@@ -724,8 +724,9 @@ public:
 		//**Figure out why this line does not work? 
 		//compute.ubo.rotMat = glm::mat4(1.0f + sin(glm::radians(timer * 360.0f))  * 3.0f);
 		compute.ubo.fogColor        = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f,0.0f);
-		//compute.ubo.WorldOffset.xyz = glm::vec3(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f);
-		compute.ubo.WorldOffset.w   = 1.1f*cos((glm::radians(timer * 360.0f)));
+		float sphere_scale          = glm::min(0.8f,1.1f * cos((glm::radians(timer * 360.0f))));
+		compute.ubo.WorldOffset     = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f, sphere_scale);
+		
 
 		
 		
