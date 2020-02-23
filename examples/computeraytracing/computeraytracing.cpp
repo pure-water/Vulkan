@@ -34,6 +34,7 @@ class VulkanExample : public VulkanExampleBase
 {
 public:
 	vks::Texture textureComputeTarget;
+	vks::Texture2D textureColorMap;     // Store the texture information of the sphere
 
 	// Resources for the graphics part of the example
 	struct {
@@ -66,7 +67,7 @@ public:
 			glm::vec4 WorldOffset = glm::vec4(0.0f);     // offset against the origninal sphere, alpha channel can be used to scale the sphere radis
 			struct {
 				glm::vec3 pos = glm::vec3(0.0f, 0.0f, 4.0f);
-				glm::vec3 lookat = glm::vec3(0.0f, 0.5f, 0.0f);
+				glm::vec3 lookat = glm::vec3(0.0f, 0.08f, 0.0f);
 				float fov = 10.0f;
 			} camera;
 			glm::mat4 rotMat      = glm::mat4(0.0f);     // Translate a rotation uniform into the shader
@@ -127,7 +128,28 @@ public:
 		compute.storageBuffers.planes.destroy();
 
 		textureComputeTarget.destroy();
+		textureColorMap.destroy();
 	}
+
+	void loadAssets()
+	{
+
+		    //VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK = 147,
+			//VK_FORMAT_ETC2_R8G8B8_SRGB_BLOCK = 148,
+			//VK_FORMAT_ETC2_R8G8B8A1_UNORM_BLOCK = 149,
+			//VK_FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK = 150,
+			//VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK = 151,
+			//VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK = 152,
+		
+		//textureColorMap.loadFromFile(getAssetPath() + "textures/vulkan_cloth_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		//textureColorMap.loadFromFile(getAssetPath() + "textures/vulkan_11_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		//textureColorMap.loadFromFile(getAssetPath() + "textures/checkboard_nomips_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		//textureColorMap.loadFromFile(getAssetPath() + "textures/japanwall_astc_4x4.ktx", VK_FORMAT_ASTC_4x4_UNORM_BLOCK, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+	 	textureColorMap.loadFromFile(getAssetPath() + "textures/japanwall_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		//textureColorMap.loadFromFile(getAssetPath() + "textures/worldmap_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+
+	}
+
 
 	// Prepare a texture target that is used to store compute shader calculations
 	void prepareTextureTarget(vks::Texture *tex, uint32_t width, uint32_t height, VkFormat format)
@@ -325,8 +347,13 @@ public:
 		// Spheres
 		std::vector<Sphere> spheres;
 
-		spheres.push_back(newSphere(glm::vec3(1.9f, -2.5f, -1.3f), 1.2f, glm::vec3(1.0f, 0.97f, 0.86f), 32.0f)); //right down
 
+		spheres.push_back(newSphere(glm::vec3(1.9f, -2.5f, -1.3f), 1.5f, glm::vec3(1.0f, 0.97f, 0.86f), 32.0f));       //right down
+		spheres.push_back(newSphere(glm::vec3(-2.30f, -1.75f, -0.3f), 0.8f, glm::vec3(0.67f, 0.87f, 0.90f), 32.0f));   //
+		spheres.push_back(newSphere(glm::vec3(-0.8f, -2.3f, -0.4f), 0.5f, glm::vec3(0.0f, 0.75f, 1.0f), 32.0f));       //middle down
+
+
+		//Array spheres on the top of the screen
 		spheres.push_back(newSphere(glm::vec3(-2.2f, 1.6f, -0.9f), 0.2f, glm::vec3(1.0f, 0.18f, 0.41f), 32.0f));
 		spheres.push_back(newSphere(glm::vec3(-1.0f, 1.6f, -0.5f), 0.3f, glm::vec3(0.8f, 0.4f, 0.4f), 32.0f));
 		spheres.push_back(newSphere(glm::vec3(0.0f, 1.6f, -0.3f), 0.4f, glm::vec3(0.8f, 0.36f, 0.36f), 32.0f));
@@ -335,8 +362,6 @@ public:
 		spheres.push_back(newSphere(glm::vec3(2.8f, 1.6f, -0.9f), 0.2f,  glm::vec3(1.0f, 0.5f, 0.8f), 32.0f));
 
 
-		spheres.push_back(newSphere(glm::vec3(-2.30f, -1.75f, -0.3f),0.6f, glm::vec3(0.67f, 0.87f, 0.90f), 32.0f));   //
-		spheres.push_back(newSphere(glm::vec3(-0.8f, -2.3f, -0.4f), 0.4f, glm::vec3(0.0f, 0.75f, 1.0f), 32.0f));        //middle down
 		
 		spheres.push_back(newSphere(glm::vec3(-3.0f, -2.8f, 0.2f), 0.3f, glm::vec3(0.3f, 0.75f, 0.2f), 32.0f));        //middle down
 		spheres.push_back(newSphere(glm::vec3(0.1f, -3.6f, -0.3f), 0.4f, glm::vec3(0.3f, 0.75f, 0.2f), 32.0f));        //middle down
@@ -374,6 +399,8 @@ public:
 		// Planes
 		std::vector<Plane> planes;
 		const float roomDim = 4.0f;
+		const uint32_t plane_tex_w = 0; 
+		const uint32_t plane_tex_h = 0; 
 		planes.push_back(newPlane(glm::vec3(0.0f, 1.0f, 0.0f), roomDim, glm::vec3(0.4f), 32.0f));
 		planes.push_back(newPlane(glm::vec3(0.0f, -1.0f, 0.0f), roomDim, glm::vec3(0.3f,0.3f,0.1f), 32.0f));
 		planes.push_back(newPlane(glm::vec3(0.0f, 0.0f, 1.0f), roomDim, glm::vec3(0.0f,0.3f, 0.0f), 32.0f));
@@ -600,16 +627,19 @@ public:
 				VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
 				VK_SHADER_STAGE_COMPUTE_BIT,
 				1),
-			// Binding 1: Shader storage buffer for the spheres
+			// Binding 2: Shader storage buffer for the spheres
 			vks::initializers::descriptorSetLayoutBinding(
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				VK_SHADER_STAGE_COMPUTE_BIT,
 				2),
-			// Binding 1: Shader storage buffer for the planes
+			// Binding 3: Shader storage buffer for the planes
 			vks::initializers::descriptorSetLayoutBinding(
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				VK_SHADER_STAGE_COMPUTE_BIT,
-				3)
+				3),
+
+			// Binding 4: Input image (read-only)
+            vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_SHADER_STAGE_COMPUTE_BIT, 4),
 		};
 
 		VkDescriptorSetLayoutCreateInfo descriptorLayout =
@@ -654,12 +684,20 @@ public:
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				2,
 				&compute.storageBuffers.spheres.descriptor),
-			// Binding 2: Shader storage buffer for the planes
+			// Binding 3: Shader storage buffer for the planes
 			vks::initializers::writeDescriptorSet(
 				compute.descriptorSet,
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				3,
-				&compute.storageBuffers.planes.descriptor)
+				&compute.storageBuffers.planes.descriptor),
+
+			// Binding 4: Shader storage buffer for the planes
+            vks::initializers::writeDescriptorSet(
+	            compute.descriptorSet,
+	            VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+	            4,
+	            &textureColorMap.descriptor)
+
 		};
 
 		vkUpdateDescriptorSets(device, computeWriteDescriptorSets.size(), computeWriteDescriptorSets.data(), 0, NULL);
@@ -724,9 +762,10 @@ public:
 		//**Figure out why this line does not work? 
 		//compute.ubo.rotMat = glm::mat4(1.0f + sin(glm::radians(timer * 360.0f))  * 3.0f);
 		compute.ubo.fogColor        = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f,0.0f);
-		float sphere_scale          = glm::min(0.8f,1.1f * cos((glm::radians(timer * 360.0f))));
-		compute.ubo.WorldOffset     = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f, sphere_scale);
-		
+		//float sphere_scale          = glm::min(0.8f,1.1f * cos((glm::radians(timer * 360.0f*0.2f))));
+		float sphere_scale = 1.0f;
+		//compute.ubo.WorldOffset     = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f, sphere_scale);
+		compute.ubo.WorldOffset = glm::vec4(0.0f, 0.0f, 0.0f, sphere_scale);
 
 		
 		
@@ -763,6 +802,7 @@ public:
 	void prepare()
 	{
 		VulkanExampleBase::prepare();
+		loadAssets();
 		prepareStorageBuffers();
 		prepareUniformBuffers();
 		prepareTextureTarget(&textureComputeTarget, TEX_DIM, TEX_DIM, VK_FORMAT_R8G8B8A8_UNORM);
