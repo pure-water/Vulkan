@@ -34,6 +34,7 @@ class VulkanExample : public VulkanExampleBase
 {
 public:
 	vks::Texture textureComputeTarget;
+	vks::Texture2D textureColorMap;     // Store the texture information of the sphere
 
 	// Resources for the graphics part of the example
 	struct {
@@ -127,7 +128,16 @@ public:
 		compute.storageBuffers.planes.destroy();
 
 		textureComputeTarget.destroy();
+		textureColorMap.destroy();
 	}
+
+	void loadAssets()
+	{
+		textureColorMap.loadFromFile(getAssetPath() + "textures/vulkan_cloth_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		//textureColorMap.loadFromFile(getAssetPath() + "textures/vulkan_11_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+
+	}
+
 
 	// Prepare a texture target that is used to store compute shader calculations
 	void prepareTextureTarget(vks::Texture *tex, uint32_t width, uint32_t height, VkFormat format)
@@ -374,6 +384,8 @@ public:
 		// Planes
 		std::vector<Plane> planes;
 		const float roomDim = 4.0f;
+		const uint32_t plane_tex_w = 0; 
+		const uint32_t plane_tex_h = 0; 
 		planes.push_back(newPlane(glm::vec3(0.0f, 1.0f, 0.0f), roomDim, glm::vec3(0.4f), 32.0f));
 		planes.push_back(newPlane(glm::vec3(0.0f, -1.0f, 0.0f), roomDim, glm::vec3(0.3f,0.3f,0.1f), 32.0f));
 		planes.push_back(newPlane(glm::vec3(0.0f, 0.0f, 1.0f), roomDim, glm::vec3(0.0f,0.3f, 0.0f), 32.0f));
@@ -600,16 +612,19 @@ public:
 				VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
 				VK_SHADER_STAGE_COMPUTE_BIT,
 				1),
-			// Binding 1: Shader storage buffer for the spheres
+			// Binding 2: Shader storage buffer for the spheres
 			vks::initializers::descriptorSetLayoutBinding(
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				VK_SHADER_STAGE_COMPUTE_BIT,
 				2),
-			// Binding 1: Shader storage buffer for the planes
+			// Binding 3: Shader storage buffer for the planes
 			vks::initializers::descriptorSetLayoutBinding(
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				VK_SHADER_STAGE_COMPUTE_BIT,
-				3)
+				3),
+
+			// Binding 4: Input image (read-only)
+            vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_SHADER_STAGE_COMPUTE_BIT, 4),
 		};
 
 		VkDescriptorSetLayoutCreateInfo descriptorLayout =
@@ -654,12 +669,20 @@ public:
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				2,
 				&compute.storageBuffers.spheres.descriptor),
-			// Binding 2: Shader storage buffer for the planes
+			// Binding 3: Shader storage buffer for the planes
 			vks::initializers::writeDescriptorSet(
 				compute.descriptorSet,
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				3,
-				&compute.storageBuffers.planes.descriptor)
+				&compute.storageBuffers.planes.descriptor),
+
+			// Binding 4: Shader storage buffer for the planes
+            vks::initializers::writeDescriptorSet(
+	            compute.descriptorSet,
+	            VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+	            4,
+	            &textureColorMap.descriptor)
+
 		};
 
 		vkUpdateDescriptorSets(device, computeWriteDescriptorSets.size(), computeWriteDescriptorSets.data(), 0, NULL);
@@ -724,9 +747,9 @@ public:
 		//**Figure out why this line does not work? 
 		//compute.ubo.rotMat = glm::mat4(1.0f + sin(glm::radians(timer * 360.0f))  * 3.0f);
 		compute.ubo.fogColor        = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f,0.0f);
-		float sphere_scale          = glm::min(0.8f,1.1f * cos((glm::radians(timer * 360.0f))));
-		compute.ubo.WorldOffset     = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f, sphere_scale);
-		
+		float sphere_scale          = glm::min(0.8f,1.1f * cos((glm::radians(timer * 360.0f*0.2f))));
+		//compute.ubo.WorldOffset     = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f, sphere_scale);
+		compute.ubo.WorldOffset = glm::vec4(0.0f, 0.0f, 0.0f, sphere_scale);
 
 		
 		
@@ -763,6 +786,7 @@ public:
 	void prepare()
 	{
 		VulkanExampleBase::prepare();
+		loadAssets();
 		prepareStorageBuffers();
 		prepareUniformBuffers();
 		prepareTextureTarget(&textureComputeTarget, TEX_DIM, TEX_DIM, VK_FORMAT_R8G8B8A8_UNORM);

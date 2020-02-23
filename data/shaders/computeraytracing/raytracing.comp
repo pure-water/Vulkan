@@ -48,6 +48,8 @@ struct Plane
 	vec3 diffuse;
 	float specular;
 	int id;
+	int tex_width;
+	int tex_height;
 };
 
 layout (std140, binding = 2) buffer Spheres
@@ -59,6 +61,9 @@ layout (std140, binding = 3) buffer Planes
 {
 	Plane planes[ ];
 };
+
+layout (binding = 4, rgba8) uniform readonly image2D inputImage;
+
 
 void reflectRay(inout vec3 rayD, in vec3 mormal)
 {
@@ -189,6 +194,14 @@ vec3 renderScene(inout vec3 rayO, inout vec3 rayD, inout int id, in vec4 timer)
 
 	// Spheres
 
+
+
+	// uvec3 gl_NumWorkGroups Number of work groups, same as what was passedin glDispatchCompute.
+    // uvec3 gl_WorkGroupID The current work group for a shaderinvocation.
+    // uvec3 gl_LocalInvocationID The current invocation of the shader withinthe work group. May be thought of as the IDof the current thread within in the current work group.
+    // uvec3 gl_GlobalInvocationID The unique ID of the current invocationacross all invocations.
+    // gluint gl_LocalInvocationIndex The unique ID of an invocation within awork group.
+
 	for (int i = 0; i < planes.length(); i++)
 	{
 		if (objectID == planes[i].id)
@@ -196,7 +209,14 @@ vec3 renderScene(inout vec3 rayO, inout vec3 rayD, inout int id, in vec4 timer)
 			normal = planes[i].normal;
 			float diffuse = lightDiffuse(normal, lightVec);
 			float specular = lightSpecular(normal, lightVec, planes[i].specular);
-			color = diffuse * planes[i].diffuse + specular;	
+			color = diffuse * planes[i].diffuse + specular;
+
+			//the following code works
+			if (i == 2) {
+			  vec3 rgb = imageLoad(inputImage, ivec2((gl_GlobalInvocationID.x)/2,(2048-gl_GlobalInvocationID.y)/2)).rgb;
+		      color = diffuse * rgb + specular;
+			 }
+
 		}
 	}
 
