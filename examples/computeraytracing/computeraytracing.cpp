@@ -67,7 +67,7 @@ public:
 			glm::vec4 WorldOffset = glm::vec4(0.0f);     // offset against the origninal sphere, alpha channel can be used to scale the sphere radis
 			struct {
 				glm::vec3 pos = glm::vec3(0.0f, 0.0f, 4.0f);
-				glm::vec3 lookat = glm::vec3(0.0f, 0.5f, 0.0f);
+				glm::vec3 lookat = glm::vec3(0.0f, 0.08f, 0.0f);
 				float fov = 10.0f;
 			} camera;
 			glm::mat4 rotMat      = glm::mat4(0.0f);     // Translate a rotation uniform into the shader
@@ -133,8 +133,20 @@ public:
 
 	void loadAssets()
 	{
-		textureColorMap.loadFromFile(getAssetPath() + "textures/vulkan_cloth_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+
+		    //VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK = 147,
+			//VK_FORMAT_ETC2_R8G8B8_SRGB_BLOCK = 148,
+			//VK_FORMAT_ETC2_R8G8B8A1_UNORM_BLOCK = 149,
+			//VK_FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK = 150,
+			//VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK = 151,
+			//VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK = 152,
+		
+		//textureColorMap.loadFromFile(getAssetPath() + "textures/vulkan_cloth_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
 		//textureColorMap.loadFromFile(getAssetPath() + "textures/vulkan_11_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		//textureColorMap.loadFromFile(getAssetPath() + "textures/checkboard_nomips_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		//textureColorMap.loadFromFile(getAssetPath() + "textures/japanwall_astc_4x4.ktx", VK_FORMAT_ASTC_4x4_UNORM_BLOCK, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+	 	textureColorMap.loadFromFile(getAssetPath() + "textures/japanwall_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		//textureColorMap.loadFromFile(getAssetPath() + "textures/worldmap_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
 
 	}
 
@@ -335,8 +347,13 @@ public:
 		// Spheres
 		std::vector<Sphere> spheres;
 
-		spheres.push_back(newSphere(glm::vec3(1.9f, -2.5f, -1.3f), 1.2f, glm::vec3(1.0f, 0.97f, 0.86f), 32.0f)); //right down
 
+		spheres.push_back(newSphere(glm::vec3(1.9f, -2.5f, -1.3f), 1.5f, glm::vec3(1.0f, 0.97f, 0.86f), 32.0f));       //right down
+		spheres.push_back(newSphere(glm::vec3(-2.30f, -1.75f, -0.3f), 0.8f, glm::vec3(0.67f, 0.87f, 0.90f), 32.0f));   //
+		spheres.push_back(newSphere(glm::vec3(-0.8f, -2.3f, -0.4f), 0.5f, glm::vec3(0.0f, 0.75f, 1.0f), 32.0f));       //middle down
+
+
+		//Array spheres on the top of the screen
 		spheres.push_back(newSphere(glm::vec3(-2.2f, 1.6f, -0.9f), 0.2f, glm::vec3(1.0f, 0.18f, 0.41f), 32.0f));
 		spheres.push_back(newSphere(glm::vec3(-1.0f, 1.6f, -0.5f), 0.3f, glm::vec3(0.8f, 0.4f, 0.4f), 32.0f));
 		spheres.push_back(newSphere(glm::vec3(0.0f, 1.6f, -0.3f), 0.4f, glm::vec3(0.8f, 0.36f, 0.36f), 32.0f));
@@ -345,8 +362,6 @@ public:
 		spheres.push_back(newSphere(glm::vec3(2.8f, 1.6f, -0.9f), 0.2f,  glm::vec3(1.0f, 0.5f, 0.8f), 32.0f));
 
 
-		spheres.push_back(newSphere(glm::vec3(-2.30f, -1.75f, -0.3f),0.6f, glm::vec3(0.67f, 0.87f, 0.90f), 32.0f));   //
-		spheres.push_back(newSphere(glm::vec3(-0.8f, -2.3f, -0.4f), 0.4f, glm::vec3(0.0f, 0.75f, 1.0f), 32.0f));        //middle down
 		
 		spheres.push_back(newSphere(glm::vec3(-3.0f, -2.8f, 0.2f), 0.3f, glm::vec3(0.3f, 0.75f, 0.2f), 32.0f));        //middle down
 		spheres.push_back(newSphere(glm::vec3(0.1f, -3.6f, -0.3f), 0.4f, glm::vec3(0.3f, 0.75f, 0.2f), 32.0f));        //middle down
@@ -747,7 +762,8 @@ public:
 		//**Figure out why this line does not work? 
 		//compute.ubo.rotMat = glm::mat4(1.0f + sin(glm::radians(timer * 360.0f))  * 3.0f);
 		compute.ubo.fogColor        = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f,0.0f);
-		float sphere_scale          = glm::min(0.8f,1.1f * cos((glm::radians(timer * 360.0f*0.2f))));
+		//float sphere_scale          = glm::min(0.8f,1.1f * cos((glm::radians(timer * 360.0f*0.2f))));
+		float sphere_scale = 1.0f;
 		//compute.ubo.WorldOffset     = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f, sphere_scale);
 		compute.ubo.WorldOffset = glm::vec4(0.0f, 0.0f, 0.0f, sphere_scale);
 
