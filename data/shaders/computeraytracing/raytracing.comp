@@ -56,6 +56,17 @@ struct Plane
 	int tex_height;
 };
 
+
+vec2 MapTex(vec3 pos, float r) {
+
+     vec2 texpos; 
+
+	 texpos.x =  (atan(pos.y/pos.x))/(2.0f*PI)+0.5f;
+     texpos.y =   acos(pos.z/r)/PI;
+    
+	 return texpos;
+}
+
 layout (std140, binding = 2) buffer Spheres
 {
 	Sphere spheres[ ];
@@ -242,10 +253,9 @@ vec3 renderScene(inout vec3 rayO, inout vec3 rayD, inout int id, in vec4 timer)
 			 //translate evrythign back to origin and translation matrix is additive
 			 vec3  PtOnOrigin = pos - spheres[i].pos;
 
-			 float u =  (atan(PtOnOrigin.y/PtOnOrigin.x))/(2.0f*PI)+0.5f;
-             float v =  acos(PtOnOrigin.z/spheres[i].radius)/PI;
-    
-	    	 vec3 sphere_texture = imageLoad(inputImage, ivec2(u*TEX_W,v*TEX_H)).rgb;
+     	     vec2 texpos = MapTex(PtOnOrigin,spheres[i].radius);
+			 vec3 sphere_texture = imageLoad(inputImage, ivec2(texpos.x*TEX_W,texpos.y*TEX_H)).rgb;
+
 		     color = diffuse * sphere_texture + specular;
 
 			}
@@ -309,4 +319,4 @@ void main()
     finalColor = vec3(pow(finalColor.x, .64f),pow(finalColor.y,.64f),pow(finalColor.z,.64f));
 	//finalColor = vec3(1.0f);
 	imageStore(resultImage, ivec2(gl_GlobalInvocationID.xy), vec4(finalColor, 0.0));
-}	
+}		
