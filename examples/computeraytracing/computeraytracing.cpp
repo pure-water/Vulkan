@@ -145,8 +145,12 @@ public:
 		//textureColorMap.loadFromFile(getAssetPath() + "textures/vulkan_11_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
 		//textureColorMap.loadFromFile(getAssetPath() + "textures/checkboard_nomips_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
 		//textureColorMap.loadFromFile(getAssetPath() + "textures/japanwall_astc_4x4.ktx", VK_FORMAT_ASTC_4x4_UNORM_BLOCK, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
-	 	textureColorMap.loadFromFile(getAssetPath() + "textures/japanwall_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+	 	//textureColorMap.loadFromFile(getAssetPath() + "textures/japanwall_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
 		//textureColorMap.loadFromFile(getAssetPath() + "textures/worldmap_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		//textureColorMap.loadFromFile(getAssetPath() + "textures/small_brick_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		//textureColorMap.loadFromFile(getAssetPath() + "textures/brick_messy_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		//textureColorMap.loadFromFile(getAssetPath() + "textures/stacked2_stone_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		textureColorMap.loadFromFile(getAssetPath() + "textures/rustic_wall_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
 
 	}
 
@@ -348,7 +352,7 @@ public:
 		std::vector<Sphere> spheres;
 
 
-		spheres.push_back(newSphere(glm::vec3(1.9f, -2.5f, -1.3f), 1.5f, glm::vec3(1.0f, 0.97f, 0.86f), 32.0f));       //right down
+		spheres.push_back(newSphere(glm::vec3(1.9f, -2.5f, -1.3f), 1.9f, glm::vec3(1.0f, 0.97f, 0.86f), 32.0f));       //right down
 		spheres.push_back(newSphere(glm::vec3(-2.30f, -1.75f, -0.3f), 0.8f, glm::vec3(0.67f, 0.87f, 0.90f), 32.0f));   //
 		spheres.push_back(newSphere(glm::vec3(-0.8f, -2.3f, -0.4f), 0.5f, glm::vec3(0.0f, 0.75f, 1.0f), 32.0f));       //middle down
 
