@@ -57,11 +57,25 @@ struct Plane
 };
 
 
-vec2 MapTex(vec3 pos, float r) {
+vec2 MapTex(vec3 pos, float r,vec4 timer) {
 
      vec2 texpos; 
+	 float speed = 7.0f;
 
-	 texpos.x =  (atan(pos.y/pos.x))/(2.0f*PI)+0.5f;
+	 float phi0     =  (atan((pos.y)/pos.x))+timer.w*speed ;
+     float phi1     = phi0;
+	 
+	 if (phi0 > PI) {
+	       phi1 = -1.0f*PI + (phi0 - PI);
+     } 
+	 
+	 else if (phi0 < -1.0f * PI) {
+	       phi1 = PI - (phi0-PI);
+	 }
+     
+
+	
+	 texpos.x =  phi1/(2.0f*PI)+0.5f;
      texpos.y =   acos(pos.z/r)/PI;
     
 	 return texpos;
@@ -105,7 +119,9 @@ float sphereIntersect(in vec3 rayO, in vec3 rayD, in Sphere sphere,in vec4 timer
 {
 	vec3 oc = rayO - (sphere.pos + timer.xyz);
 	float b = 2.0 * dot(oc, rayD);
-	float c = dot(oc, oc) - sphere.radius*sphere.radius  * timer.w*timer.w;
+	//float c = dot(oc, oc) - sphere.radius*sphere.radius  * timer.w*timer.w;
+	float c = dot(oc, oc) - sphere.radius*sphere.radius ;
+
 	float h = b*b - 4.0*c;
 	if (h < 0.0) 
 	{
@@ -118,7 +134,9 @@ float sphereIntersect(in vec3 rayO, in vec3 rayD, in Sphere sphere,in vec4 timer
 
 vec3 sphereNormal(in vec3 pos, in Sphere sphere, in vec4 timer)
 {
-	return (pos - (sphere.pos + timer.xyz)) / (sphere.radius*timer.w);
+	//return (pos - (sphere.pos + timer.xyz)) / (sphere.radius*timer.w);
+	return (pos - (sphere.pos + timer.xyz)) / (sphere.radius);
+
 }
 
 // Plane ===========================================================
@@ -253,7 +271,7 @@ vec3 renderScene(inout vec3 rayO, inout vec3 rayD, inout int id, in vec4 timer)
 			 //translate evrythign back to origin and translation matrix is additive
 			 vec3  PtOnOrigin = pos - spheres[i].pos;
 
-     	     vec2 texpos = MapTex(PtOnOrigin,spheres[i].radius);
+     	     vec2 texpos = MapTex(PtOnOrigin,spheres[i].radius,timer);
 			 vec3 sphere_texture = imageLoad(inputImage, ivec2(texpos.x*TEX_W,texpos.y*TEX_H)).rgb;
 
 		     color = diffuse * sphere_texture + specular;
