@@ -60,13 +60,14 @@ struct Plane
 vec2 MapTex(vec3 pos, float r,vec4 timer) {
 
      vec2 texpos; 
-	 float speed = 7.0f;
+	 float speed = (r <= 0.5f) ? 22.0f: 7.0f;
+
 
 	 float phi0     =  (atan((pos.y)/pos.x))+timer.w*speed ;
      float phi1     = phi0;
 	 
-	 if (phi0 > PI) {
-	       phi1 = -1.0f*PI + (phi0 - PI);
+	 if (phi0 >= PI) {
+	       phi1 = phi0 - ceil(phi0/(2.0 * PI)) * 2.0 * PI;
      } 
 	 
 	 else if (phi0 < -1.0f * PI) {
@@ -91,8 +92,10 @@ layout (std140, binding = 3) buffer Planes
 	Plane planes[ ];
 };
 
-layout (binding = 4, rgba8) uniform readonly image2D inputImage;
-
+layout (binding = 4, rgba8) uniform readonly image2D inputImage0;
+layout (binding = 5, rgba8) uniform readonly image2D inputImage1;
+layout (binding = 6, rgba8) uniform readonly image2D inputImage2;
+layout (binding = 7, rgba8) uniform readonly image2D inputImage3;
 
 void reflectRay(inout vec3 rayD, in vec3 mormal)
 {
@@ -247,7 +250,7 @@ vec3 renderScene(inout vec3 rayO, inout vec3 rayD, inout int id, in vec4 timer)
 			//the following code works,we sample a texture manually
 			//if (i == 2) {
 			 if ( 0 == 1) {
-			  vec3 rgb = imageLoad(inputImage, ivec2((gl_GlobalInvocationID.x)/2,(2*TEX_W-gl_GlobalInvocationID.y)/2)).rgb;
+			  vec3 rgb = imageLoad(inputImage0, ivec2((gl_GlobalInvocationID.x)/2,(2*TEX_W-gl_GlobalInvocationID.y)/2)).rgb;
 		      color = diffuse * rgb + specular;
 			 }
 			 
@@ -265,16 +268,37 @@ vec3 renderScene(inout vec3 rayO, inout vec3 rayD, inout int id, in vec4 timer)
 			
 
 			// we come back to 1st principle to use this to calculate longtitude and latitude http://mathworld.wolfram.com/SphericalCoordinates.html
+			vec3  PtOnOrigin = pos - spheres[i].pos;
+    	    vec2 texpos = MapTex(PtOnOrigin,spheres[i].radius,timer);
 
 			if ( spheres[i].radius > 0.5f) {
-
 			 //translate evrythign back to origin and translation matrix is additive
-			 vec3  PtOnOrigin = pos - spheres[i].pos;
+			 vec3 sphere_texture = imageLoad(inputImage0, ivec2(texpos.x*TEX_W,texpos.y*TEX_H)).rgb;
+			 color = diffuse * sphere_texture + specular;
+			}
 
-     	     vec2 texpos = MapTex(PtOnOrigin,spheres[i].radius,timer);
-			 vec3 sphere_texture = imageLoad(inputImage, ivec2(texpos.x*TEX_W,texpos.y*TEX_H)).rgb;
+			else if (spheres[i].radius == 0.5f) {
+			 vec3 sphere_texture = imageLoad(inputImage1, ivec2(texpos.x*TEX_W,texpos.y*TEX_H)).rgb;
+			 color = diffuse * sphere_texture + specular;
 
-		     color = diffuse * sphere_texture + specular;
+			}
+
+			else if (spheres[i].radius == 0.5f) {
+			 vec3 sphere_texture = imageLoad(inputImage1, ivec2(texpos.x*TEX_W,texpos.y*TEX_H)).rgb;
+			 color = diffuse * sphere_texture + specular;
+
+			}
+
+			else if (spheres[i].pos.y < 0.0f) {
+
+			   if (spheres[i].pos.z  > 0.0f ) {
+        			 vec3 sphere_texture = imageLoad(inputImage2, ivec2(texpos.x*TEX_W,texpos.y*TEX_H)).rgb;
+		        	 color = diffuse * sphere_texture + specular;
+			   }
+			   else {
+        			 vec3 sphere_texture = imageLoad(inputImage3, ivec2(texpos.x*TEX_W,texpos.y*TEX_H)).rgb;
+		        	 color = diffuse * sphere_texture + specular;
+			   }
 
 			}
 
