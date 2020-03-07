@@ -38,6 +38,11 @@ public:
 	vks::Texture2D textureColorMap1;     // Store the texture information of the sphere
 	vks::Texture2D textureColorMap2;     // Store the texture information of the sphere
 	vks::Texture2D textureColorMap3;     // Store the texture information of the sphere
+	vks::Texture2D textureColorMap4;     // Store the texture information of the sphere
+	vks::Texture2D textureColorMap5;     // Store the texture information of the sphere
+	vks::Texture2D textureColorMap6;     // Store the texture information of the sphere
+	vks::Texture2D textureColorMap7;     // Store the texture information of the sphere
+
 
 	// Resources for the graphics part of the example
 	struct {
@@ -135,6 +140,11 @@ public:
 		textureColorMap1.destroy();
 		textureColorMap2.destroy();
 		textureColorMap3.destroy();
+		textureColorMap4.destroy();
+		textureColorMap5.destroy();
+		textureColorMap6.destroy();
+		textureColorMap7.destroy();
+
 	}
 
 	void loadAssets()
@@ -147,16 +157,18 @@ public:
 			//VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK = 151,
 			//VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK = 152,
 		
-		//textureColorMap.loadFromFile(getAssetPath() + "textures/vulkan_cloth_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
 		//textureColorMap.loadFromFile(getAssetPath() + "textures/vulkan_11_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
-		//textureColorMap.loadFromFile(getAssetPath() + "textures/checkboard_nomips_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+	
 		//textureColorMap.loadFromFile(getAssetPath() + "textures/japanwall_astc_4x4.ktx", VK_FORMAT_ASTC_4x4_UNORM_BLOCK, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
-	 	textureColorMap3.loadFromFile(getAssetPath() + "textures/japanwall_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
-		textureColorMap1.loadFromFile(getAssetPath() + "textures/worldmap_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+	
 		textureColorMap0.loadFromFile(getAssetPath() + "textures/small_brick_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
-		//textureColorMap1.loadFromFile(getAssetPath() + "textures/brick_messy_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		textureColorMap1.loadFromFile(getAssetPath() + "textures/worldmap_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
 		textureColorMap2.loadFromFile(getAssetPath() + "textures/stacked2_stone_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
-		//textureColorMap.loadFromFile(getAssetPath() + "textures/rustic_wall_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		textureColorMap3.loadFromFile(getAssetPath() + "textures/japanwall_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		textureColorMap4.loadFromFile(getAssetPath() + "textures/brick_messy_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		textureColorMap5.loadFromFile(getAssetPath() + "textures/rustic_wall_1024x1024.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		textureColorMap6.loadFromFile(getAssetPath() + "textures/checkerboard_nomips_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
+		textureColorMap7.loadFromFile(getAssetPath() + "textures/vulkan_cloth_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_LAYOUT_GENERAL);
 
 	}
 
@@ -658,6 +670,18 @@ public:
 			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_SHADER_STAGE_COMPUTE_BIT, 6),
 			// Binding 7: Input image (read-only)
 			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_SHADER_STAGE_COMPUTE_BIT, 7),
+
+			// Binding 8: Input image (read-only)
+			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_SHADER_STAGE_COMPUTE_BIT, 8),
+			// Binding 9: Input image (read-only)
+			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_SHADER_STAGE_COMPUTE_BIT, 9),
+			// Binding 10: Input image (read-only)
+			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_SHADER_STAGE_COMPUTE_BIT, 10),
+			// Binding 11: Input image (read-only)
+			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, VK_SHADER_STAGE_COMPUTE_BIT, 11),
+
+
+
 		};
 
 		VkDescriptorSetLayoutCreateInfo descriptorLayout =
@@ -736,8 +760,37 @@ public:
 	            compute.descriptorSet,
 	            VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
 	            7,
-	            &textureColorMap3.descriptor)
+	            &textureColorMap3.descriptor),
 
+			// Binding 8: Shader storage buffer for the planes
+			vks::initializers::writeDescriptorSet(
+				compute.descriptorSet,
+				VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+				8,
+				&textureColorMap4.descriptor),
+
+			// Binding 9: Shader storage buffer for the planes
+			vks::initializers::writeDescriptorSet(
+				compute.descriptorSet,
+				VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+				9,
+				&textureColorMap5.descriptor),
+
+
+			// Binding 10: Shader storage buffer for the planes
+			vks::initializers::writeDescriptorSet(
+				compute.descriptorSet,
+				VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+				10,
+				&textureColorMap6.descriptor),
+
+			// Binding 11: Shader storage buffer for the planes
+			vks::initializers::writeDescriptorSet(
+				compute.descriptorSet,
+				VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+				11,
+				&textureColorMap7.descriptor)
+					   			 
 		};
 
 		vkUpdateDescriptorSets(device, computeWriteDescriptorSets.size(), computeWriteDescriptorSets.data(), 0, NULL);
@@ -808,6 +861,7 @@ public:
 		//float sphere_scale = 1.0f;
 		//compute.ubo.WorldOffset     = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f, sphere_scale);
 		compute.ubo.WorldOffset = glm::vec4(0.0f, 0.0f, 0.0f, sphere_scale);
+		compute.ubo.rotMat = glm::mat4(acos(timer * 0.5f));
 
 		
 		
