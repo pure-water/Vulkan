@@ -332,12 +332,12 @@ vec3 renderScene(inout vec3 rayO, inout vec3 rayD, inout int id, in vec4 timer)
 
 				else if (spheres[i].pos.x < -0.5f || spheres[i].pos.x > 0.5f) {
 
-					vec3 sphere_texture = imageLoad(inputImage5, ivec2(texpos.x*TEX_W,texpos.y*TEX_H)).rgb;
+					vec3 sphere_texture = imageLoad(inputImage3	, ivec2(texpos.x*TEX_W,texpos.y*TEX_H)).rgb;
 		        	 color = diffuse * sphere_texture + specular;
 				}
 				else {
 
-					vec3 sphere_texture = imageLoad(inputImage5, ivec2(texpos.x*TEX_W,texpos.y*TEX_H)).rgb;
+					vec3 sphere_texture = imageLoad(inputImage1, ivec2(texpos.x*TEX_W,texpos.y*TEX_H)).rgb;
 		        	 color = diffuse * sphere_texture + specular;
 				}
 
