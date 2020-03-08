@@ -73,6 +73,7 @@ public:
 			float aspectRatio;						// Aspect ratio of the viewport
 			glm::vec4 fogColor = glm::vec4(0.0f);
 			glm::vec4 WorldOffset = glm::vec4(0.0f);     // offset against the origninal sphere, alpha channel can be used to scale the sphere radis
+			glm::vec4 Rotation = glm::vec4(0.0f);
 			struct {
 				glm::vec3 pos = glm::vec3(0.0f, 0.0f, 4.0f);
 				glm::vec3 lookat = glm::vec3(0.0f, 0.08f, 0.0f);
@@ -857,11 +858,13 @@ public:
 		compute.ubo.fogColor        = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f,0.0f);
 		compute.ubo.fogColor        = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f,0.0f);
 		float sphere_scale          = glm::atan(timer * 0.5f);	
-		float lat_scale = glm::acos(timer * 0.5f);
+		compute.ubo.Rotation        = glm::vec4(glm::acos(timer * 0.5f));
+		std::cout << "rotation  :" << glm::acos(timer)<< std::endl;
+		std::cout << "timer : " << timer << std::endl;
 		//float sphere_scale = 1.0f;
 		//compute.ubo.WorldOffset     = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f, sphere_scale);
 		compute.ubo.WorldOffset = glm::vec4(0.0f, 0.0f, 0.0f, sphere_scale);
-		compute.ubo.rotMat = glm::mat4(acos(timer * 0.5f));
+		compute.ubo.rotMat = glm::mat4(0.3f);
 
 		
 		
@@ -929,7 +932,7 @@ public:
 	virtual void viewChanged()
 	{
 		compute.ubo.aspectRatio = (float)width / (float)height;
-		//updateUniformBuffers();
+		updateUniformBuffers();
 	}
 };
 
