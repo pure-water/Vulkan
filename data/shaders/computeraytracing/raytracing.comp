@@ -61,7 +61,7 @@ struct Plane
 vec2 MapTex(vec3 pos, float r,vec4 timer,vec4 LatRot) {
 
      vec2 texpos; 
-	 float speed = (r > 1.3f) ? 3.0f : ((r <= 0.5f) ? 22.0f: 7.0f);
+	 float speed = (r > 1.3f) ? 4.0f : ((r <= 0.5f) ? 10.0f: 10.0f);
 
 
 

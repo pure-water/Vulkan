@@ -598,7 +598,7 @@ void VulkanExampleBase::updateOverlay()
 	ImGui::TextUnformatted(title.c_str());
 	ImGui::TextUnformatted(deviceProperties.deviceName);
 	ImGui::Text("%.2f ms/frame (%.1d fps)", (1000.0f / lastFPS), lastFPS);
-	ImGui::Text("timer : %.2f ", timer);
+	ImGui::Text("timer : %.2f   sphere-rot : %.2f ", timer, glm::degrees(glm::atan(glm::radians(timer * 20.0f))));
 
 
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)

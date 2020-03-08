@@ -115,7 +115,7 @@ public:
 		camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 512.0f);
 		camera.setRotation(glm::vec3(0.0f, 0.0f, 0.0f));
 		camera.setTranslation(glm::vec3(0.0f, 0.0f, -4.0f));
-		camera.rotationSpeed = 0.0f;
+		camera.rotationSpeed = 0.3f;
 		camera.movementSpeed = 2.0f;
 	}
 
@@ -857,7 +857,7 @@ public:
 		//compute.ubo.rotMat = glm::mat4(1.0f + sin(glm::radians(timer * 360.0f))  * 3.0f);
 		compute.ubo.fogColor        = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f,0.0f);
 		compute.ubo.fogColor        = glm::vec4(0.0f,1.0f + sin(glm::radians(timer * 360.0f)) * 3.0f,0.0f,0.0f);
-		float sphere_scale          = glm::atan(timer * 0.5f);	
+		float sphere_scale          = glm::atan(glm::radians(timer * 20.0f));	
 		compute.ubo.Rotation        = glm::vec4(glm::acos(timer * 0.5f));
 		std::cout << "rotation  :" << glm::acos(timer)<< std::endl;
 		std::cout << "timer : " << timer << std::endl;
