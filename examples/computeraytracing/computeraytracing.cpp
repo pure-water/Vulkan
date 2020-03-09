@@ -459,22 +459,12 @@ public:
 	}
 
 
-	//yaogang updating
-
-
-
-	// Setup and fill the compute shader storage buffers containing primitives for the raytraced scene/
-	void UpdateStorageBuffers()
-	{
-	
-		//**yaogang to do? why update storage buffer does not work? 
-		//VK_CHECK_RESULT(compute.storageBuffers.spheres.map());
-		//memcpy(compute.storageBuffers.spheres.mapped,&spheres, sizeof(compute.storageBuffers.spheres));
-		//compute.storageBuffers.spheres.unmap();
-
+	//BVH construction: we build 
+	void SphereBoundingBox() {
 
 
 	}
+
 
 	void setupDescriptorPool()
 	{
@@ -925,7 +915,6 @@ public:
 		{
 			std::cout << "update uniform" << std::endl;
 			updateUniformBuffers();
-			//UpdateStorageBuffers();
 		}
 	}
 
